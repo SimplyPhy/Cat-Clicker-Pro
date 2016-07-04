@@ -1,5 +1,5 @@
-# Cat Clicker Premium Vanilla
+# Cat Clicker Premium Pro
 
-Here's Ben's solution for Cat Clicker Premium from [Udacity's Javascript Design Patterns course](https://www.udacity.com/course/javascript-design-patterns--ud989).
+This is Ben's (Udacity's Javascript Design Patterns course instructor) version of Cat Clicker Premium, using an MVC format.  I've added an admin mode to his project.
 
 Clone the repo and open up `index.html` in your browser of choice.
