@@ -5,7 +5,20 @@
     <title>Cat Clicker</title>
 </head>
 <body>
-    <ul id="cat-list"></ul>
+    <div id="header">
+    	<form id="admin-form">
+    		<button id="admin-button">admin</button>
+    		<ul id="admin-list">
+    			<input id="admin-name" type="text" name="cat-name" placeholder="cat name">
+    			<input id="admin-url" type="text" name="cat-url" placeholder="cat url link">
+    			<input id="admin-click-count" type="text" name="cat-click-count" placeholder="cat click count">
+    			<br>
+    			<input id="admin-cancel" type="submit" name="cancel" value="cancel">
+    			<input id="admin-save" type="submit" name="save" value="save">
+    		</ul>
+    	</form>
+    	<ul id="cat-list"></ul>
+    </div>
     <div id="cat">
         <h2 id="cat-name"></h2>
         <div id="cat-count"></div>

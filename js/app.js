@@ -1,8 +1,25 @@
+/*
+    Cat Clicker Premium Pro Requirements
+
+    Features:
+    /1. Add 3 buttons (admin, save, cancel)
+    /2. Add three input fields (name, URL, # of clicks)
+    /3. Add a form to contain the input fields, and maybe the buttons
+
+    Functionality:
+    1. Click the admin button to make the form appear
+        i. The should start with the current cat info filled in
+    2. Click the save button to send updated cat model to view
+        i. Also, the form should disappear
+    3. Click the cancel button to make the form disappear
+*/
+
 
 /* ======= Model ======= */
 
 var model = {
     currentCat: null,
+    adminMode: false,
     cats: [
         {
             clickCount : 0,
@@ -49,6 +66,7 @@ var octopus = {
         // tell our views to initialize
         catListView.init();
         catView.init();
+        adminView.init();
     },
 
     getCurrentCat: function() {
@@ -68,6 +86,21 @@ var octopus = {
     incrementCounter: function() {
         model.currentCat.clickCount++;
         catView.render();
+    },
+
+    adminBool: function(bool) {
+        bool = true ? (model.adminMode = true, adminView.render("visible"))
+                    : (model.adminMode = false, adminView.render("hidden"));
+        console.log(model.adminMode);
+    },
+
+    // set the counter for the admin-selected cat
+    adminOverride: function(cat, url, count) {
+        model.currentCat.clickCount = count;
+        model.currentCat.imgSrc = url;
+        model.currentCat.name = cat;
+
+        this.adminBool(false);
     }
 };
 
@@ -82,6 +115,16 @@ var catView = {
         this.catNameElem = document.getElementById('cat-name');
         this.catImageElem = document.getElementById('cat-img');
         this.countElem = document.getElementById('cat-count');
+
+        // store pointers to DOM header elements
+        // this.adminForm = document.getElementById('admin-form');
+        // this.adminButton = document.getElementById('admin-button');
+        // this.adminList = document.getElementById('admin-list');
+        // this.adminName = document.getElementById('admin-name');
+        // this.adminUrl = document.getElementById('admin-url');
+        // this.adminClickCount = document.getElementById('admin-click-count');
+        // this.adminSave = document.getElementById('admin-save');
+        // this.adminCancel = document.getElementById('admin-cancel');
 
         // on click, increment the current cat's counter
         this.catImageElem.addEventListener('click', function(){
@@ -141,6 +184,61 @@ var catListView = {
             // finally, add the element to the list
             this.catListElem.appendChild(elem);
         }
+    }
+};
+
+var adminView = {
+
+    init: function() {
+        this.adminForm = document.getElementById('admin-form');
+        this.adminButton = document.getElementById('admin-button');
+        this.adminList = document.getElementById('admin-list');
+        this.adminName = document.getElementById('admin-name');
+        this.adminUrl = document.getElementById('admin-url');
+        this.adminClickCount = document.getElementById('admin-click-count');
+        this.adminSave = document.getElementById('admin-save');
+        this.adminCancel = document.getElementById('admin-cancel');
+
+        this.adminList.style.visibility = "hidden";
+
+        this.adminButton.addEventListener('click', function(event){
+            event.preventDefault(event);
+            octopus.adminBool(true);
+        });
+
+        // this.clickSave = function() {
+        //     event.preventDefault(event);
+        //     console.log(this);
+        //     var name = this.adminName.value;
+        //     var url = this.adminUrl.value;
+        //     var clickCount = this.adminClickCount.value;
+        //     octopus.adminOverride(name, url, clickCount);
+        //     octopus.adminBool(false);
+        // };
+        // this.adminSave.addEventListener('click', this.clickSave.bind(this), false);
+
+        this.adminSave.addEventListener('click', function(event){
+            event.preventDefault(event);
+            console.log(this);
+            var name = this.adminName.value;
+            var url = this.adminUrl.value;
+            var clickCount = this.adminClickCount.value;
+            octopus.adminOverride(name, url, clickCount);
+            octopus.adminBool(false);
+        });
+
+        this.adminCancel.addEventListener('click', function(event){
+            event.preventDefault(event);
+            octopus.adminBool(false);
+        });
+    },
+
+    render: function(visible) {
+        this.adminList.style.visibility = visible;
+        this.adminName.value = model.currentCat.name;
+        this.adminUrl.value = model.currentCat.imgSrc;
+        this.adminClickCount.value = model.currentCat.clickCount;
+        console.log("visible value: " + visible);
     }
 };
 
