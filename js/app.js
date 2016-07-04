@@ -88,19 +88,21 @@ var octopus = {
         catView.render();
     },
 
-    adminBool: function(bool) {
-        bool = true ? (model.adminMode = true, adminView.render("visible"))
+    // sets the state of visibility for adminList in adminView
+    adminBool: function(happy) {
+        happy === "true" ? (model.adminMode = true, adminView.render("visible"))
                     : (model.adminMode = false, adminView.render("hidden"));
-        console.log(model.adminMode);
     },
 
     // set the counter for the admin-selected cat
     adminOverride: function(cat, url, count) {
-        model.currentCat.clickCount = count;
-        model.currentCat.imgSrc = url;
-        model.currentCat.name = cat;
+        var currentCat = octopus.getCurrentCat();
+        currentCat.clickCount = count;
+        currentCat.imgSrc = url;
+        currentCat.name = cat;
+        catView.render();
 
-        this.adminBool(false);
+        this.adminBool("false");
     }
 };
 
@@ -115,16 +117,6 @@ var catView = {
         this.catNameElem = document.getElementById('cat-name');
         this.catImageElem = document.getElementById('cat-img');
         this.countElem = document.getElementById('cat-count');
-
-        // store pointers to DOM header elements
-        // this.adminForm = document.getElementById('admin-form');
-        // this.adminButton = document.getElementById('admin-button');
-        // this.adminList = document.getElementById('admin-list');
-        // this.adminName = document.getElementById('admin-name');
-        // this.adminUrl = document.getElementById('admin-url');
-        // this.adminClickCount = document.getElementById('admin-click-count');
-        // this.adminSave = document.getElementById('admin-save');
-        // this.adminCancel = document.getElementById('admin-cancel');
 
         // on click, increment the current cat's counter
         this.catImageElem.addEventListener('click', function(){
@@ -142,6 +134,7 @@ var catView = {
         this.catNameElem.textContent = currentCat.name;
         this.catImageElem.src = currentCat.imgSrc;
     }
+
 };
 
 var catListView = {
@@ -190,6 +183,8 @@ var catListView = {
 var adminView = {
 
     init: function() {
+
+        // store admin selector nodes
         this.adminForm = document.getElementById('admin-form');
         this.adminButton = document.getElementById('admin-button');
         this.adminList = document.getElementById('admin-list');
@@ -199,46 +194,52 @@ var adminView = {
         this.adminSave = document.getElementById('admin-save');
         this.adminCancel = document.getElementById('admin-cancel');
 
+        // set default admin-list state to hidden
         this.adminList.style.visibility = "hidden";
 
+        // when admin button is clicked, set admin-list to visible and show current
+        // cat properties in the text input boxes
         this.adminButton.addEventListener('click', function(event){
             event.preventDefault(event);
-            octopus.adminBool(true);
+            octopus.adminBool("true");
         });
 
-        // this.clickSave = function() {
-        //     event.preventDefault(event);
-        //     console.log(this);
-        //     var name = this.adminName.value;
-        //     var url = this.adminUrl.value;
-        //     var clickCount = this.adminClickCount.value;
-        //     octopus.adminOverride(name, url, clickCount);
-        //     octopus.adminBool(false);
-        // };
-        // this.adminSave.addEventListener('click', this.clickSave.bind(this), false);
-
+        // when save button is clicked, tell octopus to update current cat obj
+        // properties with the values in the input boxes, and display them, then
+        // hide the admin options
         this.adminSave.addEventListener('click', function(event){
             event.preventDefault(event);
-            console.log(this);
-            var name = this.adminName.value;
-            var url = this.adminUrl.value;
-            var clickCount = this.adminClickCount.value;
-            octopus.adminOverride(name, url, clickCount);
-            octopus.adminBool(false);
+            adminView.update();
+            octopus.adminBool("false");
         });
 
+        // when cancel button is clicked, clear admin options
         this.adminCancel.addEventListener('click', function(event){
             event.preventDefault(event);
-            octopus.adminBool(false);
+            octopus.adminBool("false");
         });
     },
 
-    render: function(visible) {
-        this.adminList.style.visibility = visible;
+    // called by adminBool, passing "visible" or "hidden", which changes the
+    // style.visibility of the adminList; then update the admin input values for
+    // the current cat
+    render: function(visi) {
+        var vis = visi;
+        this.adminList.style.visibility = vis;
         this.adminName.value = model.currentCat.name;
         this.adminUrl.value = model.currentCat.imgSrc;
         this.adminClickCount.value = model.currentCat.clickCount;
-        console.log("visible value: " + visible);
+    },
+
+    // sets the current name, url, and click count values from the admin input
+    // boxes, and passes them to the optopus's adminOverride function
+    update: function() {
+        var name = document.getElementById('admin-name').value;
+        var url = document.getElementById('admin-url').value;
+        var clickCount = document.getElementById('admin-click-count').value;
+
+        console.log("name: " + name);
+        octopus.adminOverride(name, url, clickCount);
     }
 };
 
